@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: zuul
+  name: zuul
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zuul
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: zuul
+    spec:
+      containers:
+      - image: zuul
+        imagePullPolicy: "Never"
+        name: zuul
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: zuul
+  name: zuul
+spec:
+  ports:
+  - name: "8080"
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: zuul
+  type: ClusterIP
+status:
+  loadBalancer: {}
