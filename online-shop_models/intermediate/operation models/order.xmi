@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ASCII"?>
+<intermediate:IntermediateOperationModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:intermediate="http://www.fhdo.de/lemma/operation/intermediate" sourceModelUri="file:///Users/phil/Entwicklung/FuE-Arbeit/LEMMA_Model_Processing/workspace/Microservices2020_OrderSystem/OrderService/order.operation">
+  <imports name="orderService" importUri="file:///Users/phil/Entwicklung/FuE-Arbeit/LEMMA_Model_Processing/workspace/Microservices2020_OrderSystem/intermediate/service models/order.xmi" importTypeName="MICROSERVICES"/>
+  <imports name="kubernetes" importUri="file:///Users/phil/Entwicklung/FuE-Arbeit/LEMMA_Model_Processing/workspace/Microservices2020_OrderSystem/Technology/kubernetes.technology" importTypeName="TECHNOLOGY"/>
+  <imports name="infrastructureTech" importUri="file:///Users/phil/Entwicklung/FuE-Arbeit/LEMMA_Model_Processing/workspace/Microservices2020_OrderSystem/Technology/infrastructure.technology" importTypeName="TECHNOLOGY"/>
+  <containers name="OrderService" operationEnvironment="//@containers.0/@technologyReference/@technology/@environment">
+    <deployedServices name="de.fhdo.ms2020.orderservice" version="v01" qualifiedName="v01.de.fhdo.ms2020.orderservice" imported="true" effectivelyImplemented="true" microserviceType="FUNCTIONAL" visibility="PUBLIC"/>
+    <endpoints protocol="rest" dataFormat="json" technology="//@containers.0/@endpoints.0/@endpointTechnology">
+      <addresses>http://localhost:8083/order</addresses>
+      <endpointTechnology name="container"/>
+    </endpoints>
+    <defaultValues value="OrderService" technologySpecificProperty="//@containers.0/@technologyReference/@technology/@properties.0"/>
+    <defaultValues value="8083" technologySpecificProperty="//@containers.0/@technologyReference/@technology/@properties.1"/>
+    <defaultValues value="mongo" technologySpecificProperty="//@containers.0/@technologyReference/@technology/@properties.6"/>
+    <defaultValues value="27017" technologySpecificProperty="//@containers.0/@technologyReference/@technology/@properties.7"/>
+    <defaultValues value="order" technologySpecificProperty="//@containers.0/@technologyReference/@technology/@properties.9"/>
+    <technologyReference import="//@imports.1">
+      <technology name="Kubernetes">
+        <environment environmentName="openjdk:11-jdk-slim" default="true"/>
+        <properties name="springApplicationName" type="string">
+          <featureNames>MANDATORY</featureNames>
+        </properties>
+        <properties name="serverPort" type="int">
+          <featureNames>MANDATORY</featureNames>
+        </properties>
+        <properties name="springDatasourceUsername" type="string"/>
+        <properties name="springDatasourcePassword" type="string"/>
+        <properties name="springDatasourceUrl" type="string"/>
+        <properties name="eurekaClientServiceUrlDefaultZone" type="string"/>
+        <properties name="springDataMongodbHost" type="string"/>
+        <properties name="springDataMongodbPort" type="int"/>
+        <properties name="springDataMongodbUri" type="string"/>
+        <properties name="springDataMongodbDatabase" type="string"/>
+        <properties name="springDataMongodbUsername" type="string"/>
+        <properties name="stringDataMongodbPassword" type="string"/>
+      </technology>
+    </technologyReference>
+  </containers>
+  <infrastructureNodes name="Mongo" imports="//@imports.2" operationEnvironment="//@infrastructureNodes.0/@reference/@technology/@environment" dependsOnNodes="//@containers.0" usedByNodes="//@containers.0">
+    <deployedServices name="de.fhdo.ms2020.orderservice" version="v01" qualifiedName="v01.de.fhdo.ms2020.orderservice" imported="true" effectivelyImplemented="true" microserviceType="FUNCTIONAL" visibility="PUBLIC"/>
+    <endpoints protocol="mongo" technology="//@infrastructureNodes.0/@endpoints.0/@endpointTechnology">
+      <addresses>mongo:27017</addresses>
+      <endpointTechnology name="container"/>
+    </endpoints>
+    <defaultValues value="order" technologySpecificProperty="//@infrastructureNodes.0/@reference/@technology/@properties.2"/>
+    <defaultValues value="DockerHub" technologySpecificProperty="//@infrastructureNodes.0/@reference/@technology/@properties.3"/>
+    <reference import="//@imports.2">
+      <technology name="MongoDB">
+        <environment environmentName="docker/mongo:latest"/>
+        <properties name="userName" type="string"/>
+        <properties name="password" type="string"/>
+        <properties name="database" type="string">
+          <featureNames>MANDATORY</featureNames>
+        </properties>
+        <properties name="imageTyp" type="string">
+          <featureNames>MANDATORY</featureNames>
+        </properties>
+      </technology>
+    </reference>
+  </infrastructureNodes>
+  <infrastructureNodes name="Eureka" imports="//@imports.2" operationEnvironment="//@infrastructureNodes.1/@reference/@technology/@environment" usedByNodes="//@infrastructureNodes.2">
+    <deployedServices name="de.fhdo.ms2020.orderservice" version="v01" qualifiedName="v01.de.fhdo.ms2020.orderservice" imported="true" effectivelyImplemented="true" microserviceType="FUNCTIONAL" visibility="PUBLIC"/>
+    <endpoints protocol="html" technology="//@infrastructureNodes.1/@endpoints.0/@endpointTechnology">
+      <addresses>http://localhost:8761</addresses>
+      <endpointTechnology name="container"/>
+    </endpoints>
+    <defaultValues value="eureka" technologySpecificProperty="//@infrastructureNodes.1/@reference/@technology/@properties.0"/>
+    <defaultValues value="8761" technologySpecificProperty="//@infrastructureNodes.1/@reference/@technology/@properties.1"/>
+    <defaultValues value="SpringComponent" technologySpecificProperty="//@infrastructureNodes.0/@reference/@technology/@properties.3"/>
+    <reference import="//@imports.2">
+      <technology name="Eureka">
+        <environment environmentName="openjdk:11-jdk-slim"/>
+        <properties name="hostname" type="string">
+          <featureNames>MANDATORY</featureNames>
+        </properties>
+        <properties name="port" type="int">
+          <featureNames>MANDATORY</featureNames>
+        </properties>
+        <properties name="imageTyp" type="string">
+          <featureNames>MANDATORY</featureNames>
+        </properties>
+      </technology>
+    </reference>
+  </infrastructureNodes>
+  <infrastructureNodes name="Zuul" imports="//@imports.2" operationEnvironment="//@infrastructureNodes.2/@reference/@technology/@environment" dependsOnNodes="//@infrastructureNodes.1" usedByNodes="//@containers.0 //@infrastructureNodes.1">
+    <endpoints protocol="html" technology="//@infrastructureNodes.2/@endpoints.0/@endpointTechnology">
+      <addresses>http://localhost:8080</addresses>
+      <endpointTechnology name="container"/>
+    </endpoints>
+    <defaultValues value="Zuul" technologySpecificProperty="//@infrastructureNodes.1/@reference/@technology/@properties.0"/>
+    <defaultValues value="8080" technologySpecificProperty="//@infrastructureNodes.1/@reference/@technology/@properties.1"/>
+    <defaultValues value="SpringComponent" technologySpecificProperty="//@infrastructureNodes.0/@reference/@technology/@properties.3"/>
+    <reference import="//@imports.2">
+      <technology name="Zuul">
+        <environment environmentName="openjdk:11-jdk-slim"/>
+        <properties name="hostname" type="string"/>
+        <properties name="port" type="int"/>
+        <properties name="imageTyp" type="string">
+          <featureNames>MANDATORY</featureNames>
+        </properties>
+      </technology>
+    </reference>
+  </infrastructureNodes>
+</intermediate:IntermediateOperationModel>

@@ -1,0 +1,61 @@
+import microservices from "order.services" as orderService
+import technology from "../Technology/kubernetes.technology" as kubernetes
+import technology from "../Technology/infrastructure.technology" as infrastructureTech
+
+@technology(kubernetes)
+container OrderService deployment technology kubernetes::_deployment.Kubernetes
+    with operation environment "openjdk:11-jdk-slim"
+    deploys orderService::v01.de.fhdo.ms2020.orderservice {
+        default values {
+            springApplicationName="OrderService"
+            serverPort=8083
+            springDataMongodbHost="mongo"
+            springDataMongodbPort=27017
+            springDataMongodbDatabase="order"
+            basic endpoints {kubernetes::_protocols.rest : "http://localhost:8083/order";}
+        }
+}
+@technology(infrastructureTech)
+Mongo is infrastructureTech::_infrastructure.MongoDB
+    with operation environment "docker/mongo:latest"
+    depends on nodes OrderService
+    used by services orderService::v01.de.fhdo.ms2020.orderservice
+    used by nodes OrderService{
+        default values {
+            database="order"
+            imageTyp="DockerHub"
+        }
+        endpoints { infrastructureTech::_protocols.mongo :  "mongo:27017";}
+}
+
+@technology(infrastructureTech)
+Eureka is infrastructureTech::_infrastructure.Eureka
+    with operation environment "openjdk:11-jdk-slim"
+    used by services orderService::v01.de.fhdo.ms2020.orderservice
+    used by nodes Zuul {
+    default values {
+        hostname="eureka"
+        port=8761
+        imageTyp="SpringComponent"
+    }
+
+    endpoints {
+        infrastructureTech::_protocols.html: "http://localhost:8761";
+    }
+}
+
+@technology(infrastructureTech)
+Zuul is infrastructureTech::_infrastructure.Zuul
+    with operation environment "openjdk:11-jdk-slim"
+    depends on nodes Eureka
+    used by nodes OrderService, Eureka {
+    default values {
+        hostname="Zuul"
+        port=8080
+        imageTyp="SpringComponent"
+    }
+
+    endpoints {
+        infrastructureTech::_protocols.html: "http://localhost:8080";
+    }
+}

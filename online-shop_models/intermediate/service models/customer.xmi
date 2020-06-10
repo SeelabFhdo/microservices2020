@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="ASCII"?>
+<intermediate:IntermediateServiceModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:intermediate="http://www.fhdo.de/lemma/service/intermediate" xmlns:intermediate_1="http://www.fhdo.de/lemma/data/intermediate" sourceModelUri="file:///Users/phil/Entwicklung/FuE-Arbeit/LEMMA_Model_Processing/workspace/Microservices2020_OrderSystem/CustomerService/customer.services">
+  <imports name="customerData" importUri="file:///Users/phil/Entwicklung/FuE-Arbeit/LEMMA_Model_Processing/workspace/Microservices2020_OrderSystem/CustomerService/customer.data" importTypeName="DATATYPES"/>
+  <imports name="spring" importUri="file:///Users/phil/Entwicklung/FuE-Arbeit/LEMMA_Model_Processing/workspace/Microservices2020_OrderSystem/Technology/springcloud.technology" importTypeName="TECHNOLOGY"/>
+  <microservices sourceModelUri="file:///Users/phil/Entwicklung/FuE-Arbeit/LEMMA_Model_Processing/workspace/Microservices2020_OrderSystem/CustomerService/customer.services" name="de.fhdo.online_shop.customerservice" version="v01" qualifiedName="v01.de.fhdo.online_shop.customerservice" visibility="PUBLIC" effectivelyImplemented="true">
+    <technologies name="spring" import="//@imports.1"/>
+    <protocols communicationType="ASYNCHRONOUS" protocol="mqtt" dataFormat="xml"/>
+    <protocols protocol="rest" dataFormat="json"/>
+    <interfaces name="CustomerInterface" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface" visibility="PUBLIC" hasImplementedOperations="true">
+      <endpoints protocol="rest" dataFormat="json" technology="//@microservices.0/@technologies.0">
+        <addresses>/resources/v1</addresses>
+      </endpoints>
+      <protocols communicationType="ASYNCHRONOUS" protocol="mqtt" dataFormat="xml"/>
+      <protocols protocol="rest" dataFormat="json"/>
+      <operations name="createCustomer" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.createCustomer" visibility="PUBLIC">
+        <endpoints protocol="rest" dataFormat="json" technology="//@microservices.0/@technologies.0">
+          <addresses>/customer</addresses>
+        </endpoints>
+        <protocols communicationType="ASYNCHRONOUS" protocol="mqtt" dataFormat="xml"/>
+        <protocols protocol="rest" dataFormat="json"/>
+        <aspects name="PostMapping" qualifiedName="springcloud.PostMapping" import="//@imports.1">
+          <properties name="value" type="string"/>
+        </aspects>
+        <parameters name="customer" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.createCustomer.customer" exchangePattern="INOUT">
+          <type xsi:type="intermediate_1:IntermediateImportedComplexType" name="Customer" origin="DATA_MODEL" kind="STRUCTURE" qualifiedName="v01.Customer.Customer" import="//@imports.0"/>
+          <aspects name="RequestBody" qualifiedName="springcloud.RequestBody" import="//@imports.1">
+            <properties name="value" type="string"/>
+          </aspects>
+        </parameters>
+      </operations>
+      <operations name="updateCustomer" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.updateCustomer" visibility="PUBLIC">
+        <endpoints protocol="rest" dataFormat="json" technology="//@microservices.0/@technologies.0">
+          <addresses>/customer</addresses>
+        </endpoints>
+        <protocols communicationType="ASYNCHRONOUS" protocol="mqtt" dataFormat="xml"/>
+        <protocols protocol="rest" dataFormat="json"/>
+        <aspects name="PutMapping" qualifiedName="springcloud.PutMapping" import="//@imports.1">
+          <properties name="value" type="string"/>
+        </aspects>
+        <parameters name="customer" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.updateCustomer.customer" exchangePattern="INOUT">
+          <type xsi:type="intermediate_1:IntermediateImportedComplexType" name="Customer" origin="DATA_MODEL" kind="STRUCTURE" qualifiedName="v01.Customer.Customer" import="//@imports.0"/>
+          <aspects name="RequestBody" qualifiedName="springcloud.RequestBody" import="//@imports.1">
+            <properties name="value" type="string"/>
+          </aspects>
+        </parameters>
+      </operations>
+      <operations name="readCustomer" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.readCustomer" visibility="PUBLIC">
+        <endpoints protocol="rest" dataFormat="json" technology="//@microservices.0/@technologies.0">
+          <addresses>/customer/{id}</addresses>
+        </endpoints>
+        <protocols communicationType="ASYNCHRONOUS" protocol="mqtt" dataFormat="xml"/>
+        <protocols protocol="rest" dataFormat="json"/>
+        <aspects name="GetMapping" qualifiedName="springcloud.GetMapping" import="//@imports.1">
+          <properties name="value" type="string"/>
+        </aspects>
+        <parameters name="id" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.readCustomer.id">
+          <type xsi:type="intermediate_1:IntermediateImportedTechnologySpecificType" name="Long" origin="TECHNOLOGY" kind="PRIMITIVE" qualifiedName="springcloud._types.Long" import="//@imports.1"/>
+          <aspects name="RequestParam" qualifiedName="springcloud.RequestParam" import="//@imports.1">
+            <properties name="value" type="string"/>
+            <properties name="required" type="boolean" defaultValue="false"/>
+            <properties name="defaultValue" type="string" defaultValue=""/>
+            <propertyValues value="id" property="//@microservices.0/@interfaces.0/@operations.2/@parameters.0/@aspects.0/@properties.0"/>
+          </aspects>
+        </parameters>
+        <parameters name="customer" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.readCustomer.customer" exchangePattern="OUT">
+          <type xsi:type="intermediate_1:IntermediateImportedComplexType" name="Customer" origin="DATA_MODEL" kind="STRUCTURE" qualifiedName="v01.Customer.Customer" import="//@imports.0"/>
+        </parameters>
+      </operations>
+      <operations name="readAllCustomers" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.readAllCustomers" visibility="PUBLIC">
+        <endpoints protocol="rest" dataFormat="json" technology="//@microservices.0/@technologies.0">
+          <addresses>/customers</addresses>
+        </endpoints>
+        <protocols communicationType="ASYNCHRONOUS" protocol="mqtt" dataFormat="xml"/>
+        <protocols protocol="rest" dataFormat="json"/>
+        <aspects name="GetMapping" qualifiedName="springcloud.GetMapping" import="//@imports.1">
+          <properties name="value" type="string"/>
+        </aspects>
+        <parameters name="customers" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.readAllCustomers.customers" exchangePattern="OUT">
+          <type xsi:type="intermediate_1:IntermediateImportedComplexType" name="Customer" origin="DATA_MODEL" kind="STRUCTURE" qualifiedName="v01.Customer.Customer" import="//@imports.0"/>
+        </parameters>
+      </operations>
+      <operations name="deleteCustomer" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.deleteCustomer" visibility="PUBLIC">
+        <endpoints protocol="rest" dataFormat="json" technology="//@microservices.0/@technologies.0">
+          <addresses>/customer</addresses>
+        </endpoints>
+        <protocols communicationType="ASYNCHRONOUS" protocol="mqtt" dataFormat="xml"/>
+        <protocols protocol="rest" dataFormat="json"/>
+        <aspects name="DeleteMapping" qualifiedName="springcloud.DeleteMapping" import="//@imports.1">
+          <properties name="value" type="string"/>
+        </aspects>
+        <parameters name="customer" qualifiedName="v01.de.fhdo.online_shop.customerservice.CustomerInterface.deleteCustomer.customer">
+          <type xsi:type="intermediate_1:IntermediateImportedComplexType" name="Customer" origin="DATA_MODEL" kind="STRUCTURE" qualifiedName="v01.Customer.Customer" import="//@imports.0"/>
+          <aspects name="RequestBody" qualifiedName="springcloud.RequestBody" import="//@imports.1">
+            <properties name="value" type="string"/>
+          </aspects>
+        </parameters>
+      </operations>
+    </interfaces>
+  </microservices>
+</intermediate:IntermediateServiceModel>

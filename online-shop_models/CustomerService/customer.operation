@@ -1,0 +1,64 @@
+import microservices from "customer.services" as customerService
+import technology from "../Technology/kubernetes.technology" as kubernetes
+import technology from "../Technology/infrastructure.technology" as infrastructureTech
+
+@technology(kubernetes)
+container CustomerService deployment technology kubernetes::_deployment.Kubernetes
+    with operation environment "openjdk:11-jdk-slim"
+    deploys customerService::v01.de.fhdo.online_shop.customerservice {
+        default values {
+            springApplicationName="CustomerService"
+            serverPort=8082
+            springDatasourceUrl="jdbc:mariadb://mariadb:3306/customer"
+            springDataMongodbUsername="root"
+            springDatasourcePassword="password"
+            basic endpoints {kubernetes::_protocols.rest : "http://customer:8082/item";}
+        }
+}
+
+@technology(infrastructureTech)
+MariaDB is infrastructureTech::_infrastructure.MariaDB used by services
+    customerService::v01.de.fhdo.online_shop.customerservice {
+        default values {
+            userName="admin"
+            hostName="maridb"
+            userPassword="password"
+            rootPassword="password"
+            imageTyp="dockerhub"
+            port="3306"
+            dataBase="customer"
+        }
+        endpoints { infrastructureTech::_protocols.mongo :  "mariadb:3306";}
+}
+
+@technology(infrastructureTech)
+Eureka is infrastructureTech::_infrastructure.Eureka
+    with operation environment "openjdk:11-jdk-slim"
+    used by services customerService::v01.de.fhdo.online_shop.customerservice
+    used by nodes Zuul {
+    default values {
+        hostname="eureka"
+        port=8761
+        imageTyp="SpringComponent"
+    }
+
+    endpoints {
+        infrastructureTech::_protocols.html: "http://localhost:8761";
+    }
+}
+
+@technology(infrastructureTech)
+Zuul is infrastructureTech::_infrastructure.Zuul
+    with operation environment "openjdk:11-jdk-slim"
+    depends on nodes Eureka
+    used by nodes CustomerService, Eureka {
+    default values {
+        hostname="Zuul"
+        port=8080
+        imageTyp="SpringComponent"
+    }
+
+    endpoints {
+        infrastructureTech::_protocols.html: "http://localhost:8080";
+    }
+}

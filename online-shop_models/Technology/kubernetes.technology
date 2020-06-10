@@ -1,0 +1,62 @@
+technology container {
+
+     protocols {
+        sync rest data formats json default with format json;
+        async mqtt data formats xml default with format xml;
+        sync jdbc data formats mysql default with format mysql;
+    }
+
+    deployment technologies {
+        Kubernetes {
+            operation environments = "openjdk:11-jdk-slim" default;
+
+            service properties {
+                // General spring boot configuration parameters
+                string springApplicationName<mandatory>;
+                int serverPort<mandatory>;
+
+                // Configuration parameter for accessing mysql databases
+                string springDatasourceUsername;
+                string springDatasourcePassword;
+                string springDatasourceUrl;
+
+                // Configuration for accessing a spring cloud eureka service
+                string eurekaClientServiceUrlDefaultZone;
+
+                // Configuration parameter for accessing mongodb databases
+                string springDataMongodbHost;
+                int springDataMongodbPort;
+                string springDataMongodbUri;
+                string springDataMongodbDatabase;
+                string springDataMongodbUsername;
+                string stringDataMongodbPassword;
+            }
+        }
+
+    }
+
+    operation aspects {
+        aspect Dockerfile<singleval> for containers, infrastructure {
+            selector(technology = Kubernetes);
+
+            string contents <mandatory>;
+        }
+
+        aspect KubernetesDeployment<singleval> for containers, infrastructure {
+            selector(technology = Kubernetes);
+            string contents <mandatory>;
+        }
+
+        aspect ComposePart<singleval> for containers, infrastructure {
+            selector(technology = Kubernetes);
+            string contents <mandatory>;
+        }
+
+        aspect MavenBuildConfiguration for containers, infrastructure {
+            selector(technology = Kubernetes);
+            string artifactId;
+            string ^version;
+            string name;
+        }
+    }
+}

@@ -1,0 +1,11 @@
+version v01 {
+    context Customer {
+        structure Customer<entity> {
+            long id<identifier>,
+            string lastname,
+            string fristname,
+            string email,
+            string password
+        }
+    }
+}

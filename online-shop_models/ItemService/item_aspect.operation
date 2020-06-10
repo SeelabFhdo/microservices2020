@@ -1,0 +1,134 @@
+import microservices from "item.services" as itemService
+import technology from "../Technology/kubernetes.technology" as kubernetes
+import technology from "../Technology/infrastructure.technology" as infrastructureTech
+
+@technology(kubernetes)
+container ItemService deployment technology kubernetes::_deployment.Kubernetes
+    with operation environment "openjdk:11-jdk-slim"
+    deploys itemService::v01.de.fhdo.online_shop.itemservice {
+
+        aspects {
+        kubernetes::_aspects.Dockerfile(
+            '
+            FROM adoptopenjdk/openjdk11
+            ENV APP_FILE itemService-0.0.1-SNAPSHOT.jar
+            ENV APP_HOME /usr/apps
+            EXPOSE 8081:8081
+            COPY target/$APP_FILE $APP_HOME/
+            WORKDIR $APP_HOME
+            ENTRYPOINT ["sh", "-c"]
+            CMD ["exec java -jar $APP_FILE"]
+            '
+        );
+
+        kubernetes::_aspects.ComposePart(
+            '
+              itemService:
+                build: itemService/
+                container_name: itemService
+                ports:
+                  - "8081:8081"
+            '
+        );
+
+        kubernetes::_aspects.KubernetesDeployment(
+            '
+            apiVersion: apps/v1
+            kind: Deployment
+            metadata:
+              creationTimestamp: null
+              labels:
+                app: itemService
+              name: itemService
+            spec:
+              replicas: 1
+              selector:
+                matchLabels:
+                  app: itemService
+              strategy: {}
+              template:
+                metadata:
+                  creationTimestamp: null
+                  labels:
+                    app: itemService
+                spec:
+                  containers:
+                  - image: itemService
+                    imagePullPolicy: "Never"
+                    name: itemService
+                    resources: {}
+            status: {}
+            ---
+            apiVersion: v1
+            kind: Service
+            metadata:
+              creationTimestamp: null
+              labels:
+                app: itemService
+              name: itemService
+            spec:
+              ports:
+              - name: 8081-8081
+                port: 8081
+                protocol: TCP
+                targetPort: 8081
+              selector:
+                app: itemService
+              type: ClusterIP
+            status:
+              loadBalancer: {}
+            '
+        );
+    }
+        default values {
+            springApplicationName="ItemService"
+            serverPort=8081
+            springDataMongodbHost="mongo"
+            springDataMongodbPort=27017
+            springDataMongodbDatabase="item"
+            basic endpoints {kubernetes::_protocols.rest : "http://localhost:8081/item";}
+
+
+        }
+
+
+}
+
+@technology(infrastructureTech)
+Mongo is infrastructureTech::_infrastructure.MongoDB
+    with operation environment "docker/mongo:latest"
+    depends on nodes ItemService
+    used by services itemService::v01.de.fhdo.online_shop.itemservice
+    used by nodes ItemService{
+        default values {
+            database="item"
+            imageTyp="DockerHub"
+        }
+        endpoints { infrastructureTech::_protocols.mongo :  "mongo:27017";}
+}
+
+@technology(infrastructureTech)
+Eureka is infrastructureTech::_infrastructure.Eureka
+    with operation environment "openjdk:11-jdk-slim"
+    used by services itemService::v01.de.fhdo.online_shop.itemservice
+    used by nodes Zuul {
+    default values {
+        hostname="eureka"
+        port=8761
+        imageTyp="SpringComponent"
+    }
+    endpoints {infrastructureTech::_protocols.html: "http://localhost:8761";}
+}
+
+@technology(infrastructureTech)
+Zuul is infrastructureTech::_infrastructure.Zuul
+    with operation environment "openjdk:11-jdk-slim"
+    depends on nodes Eureka
+    used by nodes ItemService, Eureka {
+    default values {
+        hostname="Zuul"
+        port=8080
+        imageTyp="SpringComponent"
+    }
+    endpoints {infrastructureTech::_protocols.html: "http://localhost:8080";}
+}

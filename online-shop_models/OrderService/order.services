@@ -1,0 +1,44 @@
+import datatypes from "order.data" as orderData
+import technology from "../Technology/springcloud.technology" as spring
+
+@technology(spring)
+public functional microservice de.fhdo.ms2020.orderservice version v01 {
+    @endpoints(spring::_protocols.rest: "/resources/v1";)
+    interface UserInterface {
+        @endpoints(spring::_protocols.rest: "/order";)
+        @spring::_aspects.PostMapping
+        createOrder(
+            @spring::_aspects.RequestBody
+            sync inout order: orderData::v01.Order.Order
+        );
+
+        @endpoints(spring::_protocols.rest: "/order";)
+        @spring::_aspects.PutMapping
+        updateOrder(
+            @spring::_aspects.RequestBody
+            sync inout order: orderData::v01.Order.Order
+        );
+
+        @endpoints(spring::_protocols.rest: "/order/{id}";)
+        @spring::_aspects.GetMapping
+        readOrder(
+            @spring::_aspects.RequestParam(value="id")
+            sync in orderId: long ,
+            sync out order: orderData::v01.Order.Order
+        );
+
+        @endpoints(spring::_protocols.rest: "/orders";)
+        @spring::_aspects.GetMapping
+        readAllOrders(
+            sync out orders: orderData::v01.Order.Order
+        );
+
+        @endpoints(spring::_protocols.rest: "/order";)
+        @spring::_aspects.DeleteMapping
+        deleteOrder(
+            @spring::_aspects.RequestParam(value="id")
+            sync in orderid: long,
+            sync out order: orderData::v01.Order.Order
+        );
+    }
+}

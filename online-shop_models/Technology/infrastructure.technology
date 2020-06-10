@@ -1,0 +1,90 @@
+technology container {
+
+    protocols {
+        sync html data formats html;
+        sync mongo data formats json;
+        sync jdbc data formats mysql;
+    }
+
+    infrastructure technologies {
+        MariaDB {
+            operation environments = "docker/mariadb:latest";
+            service properties {
+                string userName;
+                string rootPassword<mandatory>;
+                string userPassword;
+                string hostName<mandatory>;
+                string port<mandatory>;
+                string imageTyp<mandatory>;
+                string dataBase<mandatory>;
+            }
+        }
+
+        MongoDB {
+            operation environments = "docker/mongo:latest";
+            service properties {
+                string userName;
+                string password;
+                string database<mandatory>;
+                string imageTyp<mandatory>;
+            }
+        }
+
+        Eureka {
+            operation environments = "openjdk:11-jdk-slim";
+            service properties {
+                string hostname<mandatory>;
+                int port<mandatory>;
+                string imageTyp<mandatory>;
+            }
+        }
+
+        Zuul {
+            operation environments = "openjdk:11-jdk-slim";
+            service properties {
+                string hostname;
+                int port;
+                string imageTyp<mandatory>;
+            }
+        }
+
+        RabbitMQ {
+            operation environments = "bitnami/rabbitmq:latest";
+            service properties {
+                string imageTyp<mandatory>;
+            }
+        }
+    }
+
+    operation aspects {
+        aspect Dockerfile<singleval> for containers, infrastructure {
+            selector(technology = Eureka);
+            selector(technology = Zuul);
+            string contents <mandatory>;
+        }
+
+        aspect KubernetesDeployment<singleval> for containers, infrastructure {
+            selector(technology = Eureka);
+            selector(technology = Zuul);
+            selector(technology = MariaDB);
+            string contents <mandatory>;
+        }
+
+        aspect ComposePart<singleval> for containers, infrastructure {
+            selector(technology = MariaDB);
+            selector(technology = Eureka);
+            selector(technology = Zuul);
+            selector(technology = RabbitMQ);
+            selector(technology = MongoDB);
+            string contents <mandatory>;
+        }
+
+        aspect MavenBuildConfiguration for containers, infrastructure {
+            string groupId<mandatory>;
+            string artifactId<mandatory>;
+            string ^version<mandatory>;
+            string name<mandatory>;
+        }
+    }
+
+}

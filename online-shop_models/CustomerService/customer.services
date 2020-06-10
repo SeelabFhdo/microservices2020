@@ -1,0 +1,43 @@
+import datatypes from "customer.data" as customerData
+import technology from "../Technology/springcloud.technology" as spring
+
+@technology(spring)
+public functional microservice de.fhdo.online_shop.customerservice version v01 {
+    @endpoints(spring::_protocols.rest: "/resources/v1";)
+    interface CustomerInterface {
+        @endpoints(spring::_protocols.rest: "/customer";)
+        @spring::_aspects.PostMapping
+        createCustomer(
+            @spring::_aspects.RequestBody
+            sync inout customer: customerData::v01.Customer.Customer
+        );
+
+        @endpoints(spring::_protocols.rest: "/customer";)
+        @spring::_aspects.PutMapping
+        updateCustomer(
+            @spring::_aspects.RequestBody
+            sync inout customer: customerData::v01.Customer.Customer
+        );
+
+        @endpoints(spring::_protocols.rest: "/customer/{id}";)
+        @spring::_aspects.GetMapping
+        readCustomer(
+            @spring::_aspects.RequestParam(value="id")
+            sync in id: long,
+            sync out customer: customerData::v01.Customer.Customer
+        );
+
+        @endpoints(spring::_protocols.rest: "/customers";)
+        @spring::_aspects.GetMapping
+        readAllCustomers(
+            sync out customers: customerData::v01.Customer.Customer
+        );
+
+        @endpoints(spring::_protocols.rest: "/customer";)
+        @spring::_aspects.DeleteMapping
+        deleteCustomer(
+            @spring::_aspects.RequestBody
+            sync in customer: customerData::v01.Customer.Customer
+        );
+    }
+}
