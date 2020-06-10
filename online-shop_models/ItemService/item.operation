@@ -1,0 +1,56 @@
+import microservices from "item.services" as itemService
+import technology from "../Technology/kubernetes.technology" as kubernetes
+import technology from "../Technology/infrastructure.technology" as infrastructureTech
+
+@technology(kubernetes)
+container ItemService deployment technology kubernetes::_deployment.Kubernetes
+    with operation environment "openjdk:11-jdk-slim"
+    deploys itemService::v01.de.fhdo.online_shop.itemservice {
+        default values {
+            springApplicationName="ItemService"
+            serverPort=8081
+            springDataMongodbHost="mongo"
+            springDataMongodbPort=27017
+            springDataMongodbDatabase="item"
+            basic endpoints {kubernetes::_protocols.rest : "http://localhost:8081/itemservice";}
+        }
+}
+
+@technology(infrastructureTech)
+Mongo is infrastructureTech::_infrastructure.MongoDB
+    with operation environment "docker/mongo:latest"
+    depends on nodes ItemService
+    used by services itemService::v01.de.fhdo.online_shop.itemservice
+    used by nodes ItemService{
+        default values {
+            database="item"
+            imageTyp="DockerHub"
+        }
+        endpoints { infrastructureTech::_protocols.mongo :  "mongo:27017";}
+}
+
+@technology(infrastructureTech)
+Eureka is infrastructureTech::_infrastructure.Eureka
+    with operation environment "openjdk:11-jdk-slim"
+    used by services itemService::v01.de.fhdo.online_shop.itemservice
+    used by nodes Zuul {
+    default values {
+        hostname="eureka"
+        port=8761
+        imageTyp="SpringComponent"
+    }
+    endpoints {infrastructureTech::_protocols.html: "http://localhost:8761";}
+}
+
+@technology(infrastructureTech)
+Zuul is infrastructureTech::_infrastructure.Zuul
+    with operation environment "openjdk:11-jdk-slim"
+    depends on nodes Eureka
+    used by nodes ItemService, Eureka {
+    default values {
+        hostname="Zuul"
+        port=8080
+        imageTyp="SpringComponent"
+    }
+    endpoints {infrastructureTech::_protocols.html: "http://localhost:8080";}
+}

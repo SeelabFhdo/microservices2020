@@ -1,0 +1,37 @@
+version v01 {
+    context Order {
+        structure Order<entity>{
+            immutable string id<identifier>,
+            immutable long customerId,
+            immutable string itemId,
+            OrderStatus orderStatus
+        }
+
+        enum OrderStatus {
+            CREATED,
+            PAYED,
+            SHIPPED
+        }
+
+        structure CustomerDTO<valueObject> {
+            long id,
+            string lastname,
+            string firstname,
+            string email,
+            string password
+        }
+
+        structure ItemDTO<valueObject> {
+            string id,
+            string itemname,
+            string description,
+            float price
+        }
+
+        structure OrderDetail<valueObject> {
+            string orderId,
+            CustomerDTO cusomerDTO,
+            ItemDTO itemDTO
+        }
+    }
+}

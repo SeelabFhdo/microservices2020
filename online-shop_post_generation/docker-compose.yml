@@ -1,0 +1,77 @@
+version: "3.7"
+
+networks:
+
+  default-network:
+    driver: bridge
+
+services:
+
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    environment:
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: customer
+    ports:
+      - "3306:3306"
+    networks:
+      - default-network
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - default-network
+    environment:
+      MONGO_INITDB_DATABASE : order
+
+  eureka:
+    image: eureka
+    build: eureka/
+    container_name: eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - default-network
+
+  itemservice:
+    image: itemservice
+    build: itemservice/
+    container_name: itemservice
+    ports:
+      - "8081:8081"
+    networks:
+      - default-network
+
+  zuul:
+    image: zuul
+    build: zuul/
+    container_name: zuul
+    ports:
+      - "8080:8080"
+    networks:
+      - default-network
+
+  customerservice:
+    image: customerservice
+    build: customerservice/
+    container_name: customerservice
+    ports:
+      - "8082:8082"
+    networks:
+      - default-network
+
+  orderservice:
+    image: orderservice
+    build: orderservice/
+    container_name: orderservice
+    ports:
+      - "8083:8083"
+    networks:
+      - default-network
+

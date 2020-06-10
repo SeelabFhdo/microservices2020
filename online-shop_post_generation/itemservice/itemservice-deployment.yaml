@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: itemservice
+  name: itemservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: itemservice
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: itemservice
+    spec:
+      containers:
+      - image: itemservice
+        imagePullPolicy: "Never"
+        name: itemservice
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: itemservice
+  name: itemservice
+spec:
+  ports:
+  - name: "8081"
+    port: 8081
+    targetPort: 8081
+  selector:
+    app: itemservice
+  type: ClusterIP
+status:
+  loadBalancer: {}

@@ -1,0 +1,43 @@
+import datatypes from "item.data" as itemData
+import technology from "../Technology/springcloud.technology" as spring
+
+@technology(spring)
+public functional microservice de.fhdo.online_shop.itemservice version v01 {
+    @endpoints(spring::_protocols.rest: "/resources/v1";)
+    interface ItemInterface {
+        @endpoints(spring::_protocols.rest: "/item";)
+        @spring::_aspects.PostMapping
+        createItem(
+            @spring::_aspects.RequestBody
+            sync inout item: itemData::v01.Item.Item
+        );
+
+        @endpoints(spring::_protocols.rest: "/item";)
+        @spring::_aspects.PutMapping
+        updateItem(
+            @spring::_aspects.RequestBody
+            sync inout item: itemData::v01.Item.Item
+        );
+
+        @endpoints(spring::_protocols.rest: "/item/{id}";)
+        @spring::_aspects.GetMapping
+        readItem(
+            @spring::_aspects.RequestParam(value="id")
+            sync in id: string,
+            sync out item: itemData::v01.Item.Item
+        );
+
+        @endpoints(spring::_protocols.rest: "/items";)
+        @spring::_aspects.GetMapping
+        readAllItems(
+            sync out items: itemData::v01.Item.Item
+        );
+
+        @endpoints(spring::_protocols.rest: "/item";)
+        @spring::_aspects.DeleteMapping
+        deleteItem(
+            @spring::_aspects.RequestBody
+            sync in item: itemData::v01.Item.Item
+        );
+    }
+}
